@@ -1,0 +1,65 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JoSAA College Predictor</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <div class="container">
+    <h1>JoSAA College Predictor 2025</h1>
+    <form id="predict-form">
+      <input type="text" id="name" placeholder="Name" required />
+      <input type="number" id="rank" placeholder="JEE Rank" required />
+      <input type="text" id="category" placeholder="Category (e.g. GEN, OBC)" required />
+      <input type="text" id="gender" placeholder="Gender (Male/Female)" required />
+      <input type="text" id="home_state" placeholder="Home State" required />
+      <input type="number" id="round" placeholder="Round (1 to 6)" required />
+      <button type="submit">Predict Colleges</button>
+    </form>
+
+    <div id="result"></div>
+  </div>
+
+  <script>
+    document.getElementById("predict-form").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const data = {
+        name: document.getElementById("name").value,
+        rank: parseInt(document.getElementById("rank").value),
+        category: document.getElementById("category").value,
+        gender: document.getElementById("gender").value,
+        home_state: document.getElementById("home_state").value,
+        round: parseInt(document.getElementById("round").value)
+      };
+
+      const resDiv = document.getElementById("result");
+      resDiv.innerHTML = "Loading...";
+
+      try {
+        const res = await fetch("https://josaa-backend.onrender.com/predict", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(data)
+        });
+
+        const result = await res.json();
+        if (Array.isArray(result) && result.length > 0) {
+          resDiv.innerHTML = "<h2>Predicted Colleges</h2><ul>" + 
+            result.map(r => `<li><strong>${r["Institute"]}</strong> - ${r["Academic Program"]} - Closing Rank: ${r["Closing Rank"]}</li>`).join('') + 
+            "</ul>";
+        } else {
+          resDiv.innerHTML = "No matching colleges found.";
+        }
+      } catch (err) {
+        console.error(err);
+        resDiv.innerHTML = "Error fetching predictions.";
+      }
+    });
+  </script>
+</body>
+</html>
