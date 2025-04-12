@@ -2,8 +2,10 @@ from flask import Flask, request, jsonify
 import pandas as pd
 from flask_cors import CORS
 
+
 app = Flask(__name__)
 CORS(app)
+CORS(app, resources={r"/*": {"origins": "https://josaa-predictor-2025-new-n9aq.vercel.app/"}})
 
 df = pd.read_excel("Merged_JoSAA_with_Fees2.xlsx")
 
